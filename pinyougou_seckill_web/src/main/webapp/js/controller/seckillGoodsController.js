@@ -60,7 +60,6 @@ app.controller('seckillGoodsController', function ($scope, $location, seckillGoo
                 }
             }
         );
-
     }
 
 });

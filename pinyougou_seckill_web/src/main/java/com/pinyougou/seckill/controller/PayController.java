@@ -32,7 +32,7 @@ public class PayController {
     public Map createNative() {
         //1.获取当前登录用户
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        //2.提取秒杀订单（从缓存 ）
+        //2.提取秒杀订单（从缓存）
         TbSeckillOrder seckillOrder = seckillOrderService.searchOrderFromRedisByUserId(username);
         //3.调用微信支付接口
         if (seckillOrder != null) {
@@ -41,7 +41,6 @@ public class PayController {
             return new HashMap<>();
         }
     }
-
 
     @RequestMapping("/queryPayStatus")
     public Result queryPayStatus(String out_trade_no) {

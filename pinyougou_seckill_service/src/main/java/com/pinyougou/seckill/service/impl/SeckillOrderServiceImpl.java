@@ -135,6 +135,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
 
     /**
      * 秒杀下单
+     *
      * @param seckillId
      * @param userId
      */
@@ -159,7 +160,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             System.out.println("商品同步到数据库...");
         }
 
-        //3.存储秒杀订单 (不向数据库存 ,只向缓存中存储)
+        //3.存储秒杀订单 (不向数据库存储,只向缓存中存储)
         TbSeckillOrder seckillOrder = new TbSeckillOrder();
         seckillOrder.setId(idWorker.nextId());
         seckillOrder.setSeckillId(seckillId);
@@ -168,7 +169,6 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         seckillOrder.setSellerId(seckillGoods.getSellerId());//商家ID
         seckillOrder.setCreateTime(new Date());
         seckillOrder.setStatus("0");//状态
-
 
         redisTemplate.boundHashOps("seckillOrder").put(userId, seckillOrder);
         System.out.println("保存订单成功(redis)");
@@ -187,6 +187,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
 
     /**
      * 保存订单到数据库
+     *
      * @param userId
      * @param orderId
      * @param transactionId
@@ -206,7 +207,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         //2.修改订单实体的属性
         seckillOrder.setPayTime(new Date());//支付日期
         seckillOrder.setStatus("1");//已支付 状态
-        seckillOrder.setTransactionId(transactionId);
+        seckillOrder.setTransactionId(transactionId);//交易流水号
 
         //3.将订单存入数据库
         seckillOrderMapper.insert(seckillOrder);
@@ -233,11 +234,12 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             redisTemplate.boundHashOps("seckillOrder").delete(userId);
 
             //3.库存回退
+            //查找秒杀商品
             TbSeckillGoods seckillGoods = (TbSeckillGoods) redisTemplate.boundHashOps("seckillGoods").get(seckillOrder.getSeckillId());
             if (seckillGoods != null) { //如果不为空
                 seckillGoods.setStockCount(seckillGoods.getStockCount() + 1);
                 redisTemplate.boundHashOps("seckillGoods").put(seckillOrder.getSeckillId(), seckillGoods);
-            } else {
+            } else {//如果唯恐
                 seckillGoods = new TbSeckillGoods();
                 seckillGoods.setId(seckillOrder.getSeckillId());
                 //属性要设置。。。。省略

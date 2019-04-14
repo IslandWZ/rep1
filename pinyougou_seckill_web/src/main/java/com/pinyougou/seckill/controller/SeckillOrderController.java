@@ -121,6 +121,11 @@ public class SeckillOrderController {
         return seckillOrderService.findPage(seckillOrder, page, rows);
     }
 
+    /**
+     * 秒杀下单
+     * @param seckillId
+     * @return
+     */
     @RequestMapping("/submitOrder")
     public Result submitOrder(Long seckillId) {
 
@@ -133,8 +138,7 @@ public class SeckillOrderController {
         try {
             seckillOrderService.submitOrder(seckillId, username);
             return new Result(true, "提交订单成功");
-
-        } catch (RuntimeException e) {
+        } catch (RuntimeException e) {//运行时异常
             e.printStackTrace();
             return new Result(false, e.getMessage());
         } catch (Exception e) {
